@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aether — Cursor Motion</title>
+    <meta
+      name="description"
+      content="마우스 커서에 반응하는 Three.js / WebGL 메인 페이지"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='36' fill='%23f4efe6'/></svg>"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+  </head>
+  <body>
+    <canvas id="webgl"></canvas>
+
+    <div class="grain" aria-hidden="true"></div>
+
+    <div class="overlay">
+      <header class="nav">
+        <a class="logo" href="#top">Aether</a>
+        <nav>
+          <a href="#work">Work</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </header>
+
+      <main class="hero" id="top">
+        <p class="eyebrow">
+          <span>Three.js</span>
+          <span class="dot"></span>
+          <span>WebGL</span>
+          <span class="dot"></span>
+          <span>Main only</span>
+        </p>
+
+        <p class="lede" data-parallax>
+          커서가 곧 카메라가 되고, 형태가 되고, 빛이 됩니다.
+          <br />
+          Sougen과 LISA처럼 — 메인 한 장면에서 반응이 시작됩니다.
+        </p>
+      </main>
+
+      <footer class="foot">
+        <p>마우스를 천천히 움직여 보세요</p>
+        <p class="coords" id="coords">0.00 / 0.00</p>
+      </footer>
+    </div>
+
+    <div class="cursor" id="cursor" aria-hidden="true">
+      <span class="cursor-ring"></span>
+      <span class="cursor-dot"></span>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

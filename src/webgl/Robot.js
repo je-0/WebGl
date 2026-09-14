@@ -3,7 +3,8 @@ import * as THREE from "three";
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
 export class Robot {
-  constructor() {
+  constructor({ variant = "full" } = {}) {
+    this.variant = variant === "bust" ? "bust" : "full";
     this.root = new THREE.Group();
     this.blinkUntil = 0;
     this.nextBlink = 2.4;
@@ -32,11 +33,11 @@ export class Robot {
       color: 0xffc27a,
     });
     const visor = new THREE.MeshStandardMaterial({
-      color: 0x11141c,
-      metalness: 0.2,
-      roughness: 0.18,
-      emissive: new THREE.Color(0x6a3d14),
-      emissiveIntensity: 0.8,
+      color: 0x2a2218,
+      metalness: 0.15,
+      roughness: 0.22,
+      emissive: new THREE.Color(0x8a4e16),
+      emissiveIntensity: 1.15,
     });
 
     return { metal, plate, accent, glow, visor };
@@ -103,28 +104,28 @@ export class Robot {
       0.2,
       0,
     ]);
-    this.part(new THREE.BoxGeometry(0.44, 0.18, 0.1), visor, this.head, [
+    this.part(new THREE.BoxGeometry(0.46, 0.22, 0.06), visor, this.head, [
       0,
       0.05,
-      0.21,
+      0.245,
     ]);
-    this.part(new THREE.BoxGeometry(0.18, 0.04, 0.06), accent, this.head, [
+    this.part(new THREE.BoxGeometry(0.2, 0.045, 0.05), accent, this.head, [
       0,
-      -0.1,
-      0.24,
+      -0.12,
+      0.255,
     ]);
 
     this.eyeL = this.part(
-      new THREE.SphereGeometry(0.035, 16, 16),
+      new THREE.SphereGeometry(0.055, 16, 16),
       glow,
       this.head,
-      [-0.09, 0.045, 0.26],
+      [-0.1, 0.055, 0.3],
     );
     this.eyeR = this.part(
-      new THREE.SphereGeometry(0.035, 16, 16),
+      new THREE.SphereGeometry(0.055, 16, 16),
       glow,
       this.head,
-      [0.09, 0.045, 0.26],
+      [0.1, 0.055, 0.3],
     );
 
     this.part(
@@ -147,6 +148,11 @@ export class Robot {
 
     this.legL = this.createLeg(-1);
     this.legR = this.createLeg(1);
+
+    if (this.variant === "bust") {
+      this.legL.root.visible = false;
+      this.legR.root.visible = false;
+    }
   }
 
   createArm(side) {

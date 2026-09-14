@@ -1,3 +1,3 @@
 import { boot } from "./boot.js";
 
-boot({ variant: "full" });
+boot({ variant: "bust" });

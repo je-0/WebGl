@@ -13,8 +13,10 @@ import {
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
 export class Experience {
-  constructor(canvas) {
+  constructor(canvas, options = {}) {
     this.canvas = canvas;
+    this.variant = options.variant === "bust" ? "bust" : "full";
+    this.isBust = this.variant === "bust";
     this.clock = new THREE.Clock();
     this.pointer = {
       x: 0,
@@ -27,6 +29,7 @@ export class Experience {
     this.mouse3 = new THREE.Vector3();
     this.mouseLocal = new THREE.Vector3();
     this.trailDest = new THREE.Vector3();
+    this.faceTarget = new THREE.Vector3();
     this.idle = true;
     this.lastMove = 0;
 
@@ -53,12 +56,12 @@ export class Experience {
     this.scene.fog = new THREE.FogExp2(0x07070c, 0.045);
 
     this.camera = new THREE.PerspectiveCamera(
-      30,
+      this.isBust ? 26 : 30,
       window.innerWidth / window.innerHeight,
       0.1,
       40,
     );
-    this.camera.position.set(0, 0.28, 5.8);
+    this.camera.position.set(0, this.isBust ? 0.9 : 0.28, this.isBust ? 2.35 : 5.8);
 
     this.createEnvironment();
     this.createEntity();
@@ -83,7 +86,7 @@ export class Experience {
     });
     this.scene.add(new THREE.Mesh(geo, this.envMat));
 
-    const floor = new THREE.Mesh(
+    this.floor = new THREE.Mesh(
       new THREE.CircleGeometry(7, 80),
       new THREE.MeshStandardMaterial({
         color: 0x08080d,
@@ -91,16 +94,16 @@ export class Experience {
         roughness: 0.72,
       }),
     );
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.55;
-    this.scene.add(floor);
+    this.floor.rotation.x = -Math.PI / 2;
+    this.floor.position.y = -1.55;
+    this.scene.add(this.floor);
   }
 
   createEntity() {
     this.group = new THREE.Group();
     this.scene.add(this.group);
 
-    this.robot = new Robot();
+    this.robot = new Robot({ variant: this.variant });
     this.group.add(this.robot.root);
 
     this.halo = new THREE.Mesh(
@@ -204,8 +207,17 @@ export class Experience {
 
   layout() {
     const mobile = window.innerWidth < 720;
+    if (this.isBust) {
+      this.group.position.set(0, mobile ? -0.15 : -0.08, 0);
+      this.group.scale.setScalar(mobile ? 1.55 : 1.85);
+      this.halo.visible = false;
+      this.floor.visible = false;
+      return;
+    }
     this.group.position.set(mobile ? 0 : 1.15, mobile ? 0.08 : 0.05, 0);
     this.group.scale.setScalar(mobile ? 0.68 : 0.95);
+    this.halo.visible = true;
+    this.floor.visible = true;
   }
 
   bind() {
@@ -269,11 +281,20 @@ export class Experience {
     this.halo.rotation.z = time * 0.08;
     this.halo.scale.setScalar(1 + Math.sin(time * 0.9) * 0.03);
 
-    this.camera.position.x +=
-      (0.28 + this.pointer.x * 0.14 - this.camera.position.x) * 0.03;
-    this.camera.position.y +=
-      (0.32 + this.pointer.y * 0.1 - this.camera.position.y) * 0.03;
-    this.camera.lookAt(this.group.position.x * 0.55, 0.18, 0);
+    if (this.isBust) {
+      this.robot.head.getWorldPosition(this.faceTarget);
+      const faceY = this.faceTarget.y;
+      this.camera.position.x += (this.pointer.x * 0.12 - this.camera.position.x) * 0.04;
+      this.camera.position.y += (faceY + this.pointer.y * 0.04 - this.camera.position.y) * 0.06;
+      this.camera.position.z = 2.35;
+      this.camera.lookAt(0, faceY, 0);
+    } else {
+      this.camera.position.x +=
+        (0.28 + this.pointer.x * 0.14 - this.camera.position.x) * 0.03;
+      this.camera.position.y +=
+        (0.32 + this.pointer.y * 0.1 - this.camera.position.y) * 0.03;
+      this.camera.lookAt(this.group.position.x * 0.55, 0.18, 0);
+    }
 
     this.mouseLight.position.copy(this.mouse3);
     this.mouseLight.intensity = 1.4 + speed * 1.8;

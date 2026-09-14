@@ -87,7 +87,8 @@ body {
   transition: color 0.35s ease;
 }
 
-.nav a:hover {
+.nav a:hover,
+.nav a[aria-current="page"] {
   color: var(--ink);
 }
 

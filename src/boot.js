@@ -20,10 +20,11 @@ export function boot(options = {}) {
   });
 
   window.addEventListener("pointermove", (event) => {
+    if (!cursor) return;
     cursorTarget.x = event.clientX;
     cursorTarget.y = event.clientY;
     const hover = event.target.closest("a, button");
-    cursor?.classList.toggle("is-hover", Boolean(hover));
+    cursor.classList.toggle("is-hover", Boolean(hover));
   });
 
   const format = (n) => (n >= 0 ? `+${n.toFixed(2)}` : n.toFixed(2));

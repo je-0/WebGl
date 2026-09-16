@@ -220,6 +220,7 @@ body {
 }
 
 body.type-bust {
+  cursor: auto;
   background:
     radial-gradient(ellipse 42% 48% at 92% 0%, #fffdf8 0%, transparent 58%),
     linear-gradient(90deg, #e7e1d6 0%, #efeae1 42%, #e8e2d7 100%);
@@ -231,6 +232,11 @@ body.type-bust #webgl {
 }
 
 .hero-copy {
+  display: none;
+}
+
+body.type-bust .overlay,
+body.type-bust .cursor {
   display: none;
 }
 

@@ -1,3 +1,4 @@
+import "./style.css";
 import { Experience } from "./webgl/Experience.js";
 
 export function boot(options = {}) {

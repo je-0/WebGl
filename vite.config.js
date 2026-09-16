@@ -4,9 +4,21 @@ import { defineConfig } from "vite";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 
-export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/WebGl/" : "/",
+export default defineConfig({
+  base: "./",
+  plugins: [
+    {
+      name: "strip-dev-only-html",
+      apply: "build",
+      transformIndexHtml(html) {
+        return html
+          .replace(/<link rel="stylesheet" href="\.\/src\/style\.css"\s*\/?>/, "")
+          .replace(/<script type="importmap">[\s\S]*?<\/script>/, "");
+      },
+    },
+  ],
   build: {
+    modulePreload: false,
     rollupOptions: {
       input: {
         main: resolve(root, "index.html"),
@@ -19,4 +31,4 @@ export default defineConfig(({ command }) => ({
     host: true,
     open: false,
   },
-}));
+});

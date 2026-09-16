@@ -219,6 +219,122 @@ body {
   }
 }
 
+body.type-bust {
+  background:
+    radial-gradient(ellipse 42% 48% at 92% 0%, #fffdf8 0%, transparent 58%),
+    linear-gradient(90deg, #e7e1d6 0%, #efeae1 42%, #e8e2d7 100%);
+}
+
+body.type-bust #webgl {
+  z-index: 2;
+  background: transparent;
+}
+
+.hero-copy {
+  display: none;
+}
+
+body.type-bust .hero-copy {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-content: flex-start;
+  padding: 8vh 4vw 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-robots,
+.hero-tag {
+  margin: 0;
+  font-family: Outfit, Manrope, Pretendard, sans-serif;
+  font-weight: 200;
+  color: rgba(156, 150, 141, 0.72);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.hero-robots {
+  font-size: clamp(80px, 18.4vw, 268px);
+  line-height: 0.82;
+  letter-spacing: 0.14em;
+  padding-left: 0.14em;
+}
+
+.hero-tag {
+  margin-top: 0.12em;
+  font-size: clamp(22px, 5.15vw, 70px);
+  line-height: 1;
+  letter-spacing: 0.22em;
+  padding-left: 0.22em;
+  color: rgba(164, 158, 149, 0.62);
+}
+
+body.type-bust .overlay {
+  inset: 0 0 auto;
+  height: auto;
+  z-index: 3;
+  display: flex;
+  grid-template-rows: none;
+}
+
+body.type-bust .nav {
+  width: 100%;
+}
+
+body.type-bust .logo,
+body.type-bust .nav a {
+  color: rgba(90, 84, 76, 0.45);
+}
+
+body.type-bust .nav a:hover,
+body.type-bust .nav a[aria-current="page"] {
+  color: rgba(62, 57, 50, 0.78);
+}
+
+.scroll-hint {
+  display: none;
+}
+
+body.type-bust .scroll-hint {
+  position: fixed;
+  right: 36px;
+  bottom: 28px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6d675e;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.scroll-icon {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(109, 103, 94, 0.7);
+  border-radius: 50%;
+  position: relative;
+}
+
+.scroll-icon::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  width: 8px;
+  height: 8px;
+  border-right: 1px solid #6d675e;
+  border-bottom: 1px solid #6d675e;
+  transform: rotate(45deg);
+}
+
 @media (hover: none), (pointer: coarse) {
   html,
   body {
@@ -247,5 +363,21 @@ body {
     flex-direction: column;
     gap: 8px;
     align-items: flex-start;
+  }
+
+  body.type-bust .scroll-hint {
+    right: 18px;
+    bottom: 18px;
+  }
+
+  .hero-robots {
+    letter-spacing: 0.08em;
+    padding-left: 0.08em;
+  }
+
+  .hero-tag {
+    letter-spacing: 0.08em;
+    white-space: normal;
+    max-width: 92vw;
   }
 }

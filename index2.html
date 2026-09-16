@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600&family=Outfit:wght@200;300;400&display=swap"
       rel="stylesheet"
     />
     <link
@@ -33,11 +33,16 @@
     </script>
   </head>
   <body>
+    <div class="hero-copy" aria-hidden="true">
+      <p class="hero-robots">ROBOTS</p>
+      <p class="hero-tag">FOR THE WAY WE LIVE</p>
+    </div>
+
     <canvas id="webgl"></canvas>
 
     <div class="grain" aria-hidden="true"></div>
 
-    <div class="overlay">
+    <div class="overlay overlay-bust">
       <header class="nav">
         <a class="logo" href="./index.html">Aether</a>
         <nav>
@@ -45,25 +50,12 @@
           <a href="./index2.html" aria-current="page">Type 02</a>
         </nav>
       </header>
-
-      <main class="hero" id="top">
-        <p class="eyebrow">
-          <span>Type 02</span>
-          <span class="dot"></span>
-          <span>Bust</span>
-          <span class="dot"></span>
-          <span>Close-up</span>
-        </p>
-        <p class="lede" data-parallax>
-          상반신을 가운데에 크게 두고, 얼굴과 눈동자가 커서를 따라갑니다.
-        </p>
-      </main>
-
-      <footer class="foot">
-        <p>마우스를 천천히 움직여 보세요</p>
-        <p class="coords" id="coords">0.00 / 0.00</p>
-      </footer>
     </div>
+
+    <a class="scroll-hint" href="#top">
+      Scroll Down
+      <span class="scroll-icon" aria-hidden="true"></span>
+    </a>
 
     <div class="cursor" id="cursor" aria-hidden="true">
       <span class="cursor-ring"></span>

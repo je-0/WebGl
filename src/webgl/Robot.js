@@ -37,6 +37,20 @@ export class Robot {
       }
     });
 
+    for (const name of ["Eye_L", "Eye_R"]) {
+      const eye = model.getObjectByName(name);
+      eye?.traverse((child) => {
+        if (!child.isMesh || !child.material) return;
+        const prev = child.material;
+        child.material = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: Boolean(prev.transparent),
+          opacity: prev.opacity ?? 1,
+          toneMapped: false,
+        });
+      });
+    }
+
     this.model = model;
     this.root.add(model);
     this.head = model.getObjectByName("NeckPivot") || model;

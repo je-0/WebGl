@@ -2,6 +2,10 @@ import "./style.css";
 import { Experience } from "./webgl/Experience.js";
 
 export function boot(options = {}) {
+  if (options.variant === "bust") {
+    document.body.classList.add("type-bust");
+  }
+
   const canvas = document.querySelector("#webgl");
   const experience = new Experience(canvas, options);
 

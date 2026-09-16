@@ -20,6 +20,11 @@ export class Experience {
     };
     this.idle = true;
     this.lastMove = 0;
+    this.camTarget = {
+      x: 0,
+      y: this.isBust ? 1.52 : 1.18,
+      z: this.isBust ? 1.72 : 4.2,
+    };
 
     this.init();
     this.bind();
@@ -30,31 +35,31 @@ export class Experience {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: true,
-      alpha: false,
+      alpha: this.isBust,
       powerPreference: "high-performance",
     });
-    this.renderer.setClearColor(IVORY, 1);
+    this.renderer.setClearColor(IVORY, this.isBust ? 0 : 1);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.NeutralToneMapping;
-    this.renderer.toneMappingExposure = 1;
+    this.renderer.toneMappingExposure = this.isBust ? 1.08 : 1;
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(IVORY);
+    if (!this.isBust) this.scene.background = new THREE.Color(IVORY);
 
     this.camera = new THREE.PerspectiveCamera(
-      this.isBust ? 29 : 32,
+      this.isBust ? 26 : 32,
       window.innerWidth / window.innerHeight,
       0.01,
       40,
     );
     this.camera.position.set(
       0,
-      this.isBust ? 1.32 : 1.18,
-      this.isBust ? 3.4 : 4.2,
+      this.camTarget.y,
+      this.isBust ? 1.72 : 4.2,
     );
-    this.camera.lookAt(0, this.isBust ? 1.21 : 0.92, 0);
+    this.camera.lookAt(0, this.isBust ? 1.5 : 0.92, 0);
 
     this.createEntity();
     this.createLights();
@@ -88,10 +93,12 @@ export class Experience {
     if (this.isBust) {
       this.group.position.set(0, 0, 0);
       this.group.scale.setScalar(1);
+      this.camTarget.z = mobile ? 2.12 : 1.72;
       return;
     }
     this.group.position.set(mobile ? 0 : 1.12, 0, 0);
     this.group.scale.setScalar(mobile ? 0.9 : 1);
+    this.camTarget.z = mobile ? 5.1 : 4.2;
   }
 
   bind() {
@@ -124,8 +131,8 @@ export class Experience {
     const time = this.clock.elapsedTime;
 
     if (this.idle || performance.now() - this.lastMove > 2200) {
-      this.pointer.tx = Math.sin(time * 0.35) * 0.55;
-      this.pointer.ty = Math.cos(time * 0.27) * 0.28;
+      this.pointer.tx = Math.sin(time * 0.35) * (this.isBust ? 0.22 : 0.55);
+      this.pointer.ty = Math.cos(time * 0.27) * (this.isBust ? 0.12 : 0.28);
       this.idle = true;
     }
 
@@ -140,19 +147,18 @@ export class Experience {
     this.robot.update(this.pointer, time, speed, dt);
 
     if (this.isBust) {
-      const z = window.innerWidth < 720 ? 4.5 : 3.4;
       this.camera.position.x +=
-        (this.pointer.x * 0.08 - this.camera.position.x) * 0.03;
+        (this.pointer.x * 0.04 - this.camera.position.x) * 0.03;
       this.camera.position.y +=
-        (1.32 + this.pointer.y * 0.04 - this.camera.position.y) * 0.03;
-      this.camera.position.z = z;
-      this.camera.lookAt(0, 1.21, 0);
+        (1.52 + this.pointer.y * 0.012 - this.camera.position.y) * 0.03;
+      this.camera.position.z = this.camTarget.z;
+      this.camera.lookAt(0, 1.5, 0);
     } else {
       this.camera.position.x +=
         (0.12 + this.pointer.x * 0.1 - this.camera.position.x) * 0.03;
       this.camera.position.y +=
         (1.18 + this.pointer.y * 0.06 - this.camera.position.y) * 0.03;
-      this.camera.position.z = window.innerWidth < 720 ? 5.1 : 4.2;
+      this.camera.position.z = this.camTarget.z;
       this.camera.lookAt(this.group.position.x * 0.7, 0.92, 0);
     }
 

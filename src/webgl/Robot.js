@@ -17,11 +17,7 @@ export class Robot {
   }
 
   async load() {
-    const modelUrl = new URL(
-      `${import.meta.env.BASE_URL}models/cloid-hero.glb`,
-      window.location.href,
-    ).href;
-    const gltf = await new GLTFLoader().loadAsync(modelUrl);
+    const gltf = await this.loadModel();
     const model = gltf.scene.getObjectByName("CLOiD_Root");
     if (!model) throw new Error("CLOiD_Root is missing");
 
@@ -57,6 +53,28 @@ export class Robot {
     this.gaze = new CloidGazeController(model);
     this.bounds = new THREE.Box3().setFromObject(model);
     this.ready = true;
+  }
+
+  async loadModel() {
+    const loader = new GLTFLoader();
+    const base =
+      typeof import.meta.env === "object" && import.meta.env?.BASE_URL
+        ? import.meta.env.BASE_URL
+        : "./";
+    const urls = [
+      new URL(`${base}models/cloid-hero.glb`, window.location.href).href,
+      new URL("./public/models/cloid-hero.glb", window.location.href).href,
+    ];
+
+    let lastError;
+    for (const url of [...new Set(urls)]) {
+      try {
+        return await loader.loadAsync(url);
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    throw lastError ?? new Error("CLOiD model was not found");
   }
 
   update(pointer, _time, _speed, dt = 0.016) {

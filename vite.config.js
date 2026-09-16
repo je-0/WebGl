@@ -11,9 +11,10 @@ export default defineConfig({
       name: "strip-dev-only-html",
       apply: "build",
       transformIndexHtml(html) {
-        return html
-          .replace(/<link rel="stylesheet" href="\.\/src\/style\.css"\s*\/?>/, "")
-          .replace(/<script type="importmap">[\s\S]*?<\/script>/, "");
+        return html.replace(
+          /<script type="importmap">[\s\S]*?<\/script>/,
+          "",
+        );
       },
     },
   ],

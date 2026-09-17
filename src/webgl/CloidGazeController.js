@@ -51,18 +51,29 @@ export class CloidGazeController {
     }
     const dt = Math.min(Math.max(delta, 0), 0.05);
     this.elapsed += dt;
-    const a = 1 - Math.exp(-dt / 0.075);
+    const a = 1 - Math.exp(-dt / 0.09);
     this.x += (this.tx - this.x) * a;
     this.y += (this.ty - this.y) * a;
     const w = MathUtils.clamp(this.weight, 0, 1);
-    const yaw = this.x * MathUtils.degToRad(12) * w;
+    const right = Math.max(this.x, 0);
+    const left = Math.max(-this.x, 0);
+    const turn = MathUtils.smootherstep((this.x + 1) * 0.5, 0, 1);
+    const headYaw =
+      (-left * MathUtils.degToRad(12) + right * MathUtils.degToRad(18) + turn * MathUtils.degToRad(6)) * w;
     const pitch = this.y * MathUtils.degToRad(6) * w;
-    this.headOffset.setFromEuler(this.euler.set(pitch, yaw, 0, "YXZ"));
+    const torsoYaw =
+      (-left * MathUtils.degToRad(3.2) + right * MathUtils.degToRad(14) + turn * MathUtils.degToRad(8)) * w;
+    const torsoRoll = (right * -4 + left * 1.5) * MathUtils.degToRad(1) * w;
+    const headSettle = 0.18 + right * 0.1;
+    const torsoSettle = 0.32 - right * 0.14;
+    this.headOffset.setFromEuler(this.euler.set(pitch, headYaw, 0, "YXZ"));
     this.headOffset.premultiply(this.headRest);
-    this.head.quaternion.slerp(this.headOffset, 1 - Math.exp(-dt / 0.16));
-    this.torsoOffset.setFromEuler(this.euler.set(pitch * 0.18, yaw * 0.24, 0, "YXZ"));
+    this.head.quaternion.slerp(this.headOffset, 1 - Math.exp(-dt / headSettle));
+    this.torsoOffset.setFromEuler(
+      this.euler.set(pitch * 0.2, torsoYaw, torsoRoll, "YXZ"),
+    );
     this.torsoOffset.premultiply(this.torsoRest);
-    this.torso.quaternion.slerp(this.torsoOffset, 1 - Math.exp(-dt / 0.34));
+    this.torso.quaternion.slerp(this.torsoOffset, 1 - Math.exp(-dt / torsoSettle));
     if (this.elapsed >= this.nextBlink) {
       this.blinkStart = this.elapsed;
       this.nextBlink = this.elapsed + 3.2 + Math.random() * 2.4;

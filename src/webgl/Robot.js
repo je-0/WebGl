@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { CloidGazeController } from "./CloidGazeController.js";
+import { CloidArmController } from "./CloidArmController.js";
 
 export class Robot {
   constructor({ variant = "full" } = {}) {
@@ -9,6 +10,7 @@ export class Robot {
     this.head = this.root;
     this.ready = false;
     this.gaze = null;
+    this.arms = null;
     this.model = null;
     this.bounds = null;
     this.loadPromise = this.load().catch((error) => {
@@ -52,6 +54,7 @@ export class Robot {
     this.root.add(model);
     this.head = model.getObjectByName("NeckPivot") || model;
     this.gaze = new CloidGazeController(model);
+    this.arms = new CloidArmController(model);
     this.bounds = new THREE.Box3().setFromObject(model);
     this.ready = true;
   }
@@ -93,9 +96,12 @@ export class Robot {
     if (!this.ready || !this.gaze) return;
     this.gaze.setPointer(pointer.x, pointer.y);
     this.gaze.update(dt);
+    this.arms?.setPointer(pointer.x, pointer.y);
+    this.arms?.update(dt);
   }
 
   dispose() {
     this.gaze?.dispose();
+    this.arms?.dispose();
   }
 }

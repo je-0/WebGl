@@ -47,6 +47,7 @@ export class Robot {
       });
     }
 
+    this.applyNaturalStance(model);
     this.model = model;
     this.root.add(model);
     this.head = model.getObjectByName("NeckPivot") || model;
@@ -75,6 +76,17 @@ export class Robot {
       }
     }
     throw lastError ?? new Error("CLOiD model was not found");
+  }
+
+  applyNaturalStance(model) {
+    const torso = model.getObjectByName("TorsoPivot");
+    const neck = model.getObjectByName("NeckPivot");
+    model.rotateY(THREE.MathUtils.degToRad(-25));
+    torso?.rotateY(THREE.MathUtils.degToRad(-8));
+    torso?.rotateX(THREE.MathUtils.degToRad(-2.5));
+    torso?.rotateZ(THREE.MathUtils.degToRad(2));
+    neck?.rotateY(THREE.MathUtils.degToRad(9));
+    neck?.rotateX(THREE.MathUtils.degToRad(3));
   }
 
   update(pointer, _time, _speed, dt = 0.016) {

@@ -20,6 +20,8 @@ export class Experience {
     };
     this.idle = true;
     this.lastMove = 0;
+    this.raycaster = new THREE.Raycaster();
+    this.ndc = new THREE.Vector2();
     this.camTarget = {
       x: 0,
       y: this.isBust ? 1.52 : 1.18,
@@ -103,7 +105,7 @@ export class Experience {
 
   bind() {
     window.addEventListener("pointermove", this.onPointerMove);
-    window.addEventListener("pointerdown", this.onPointerMove);
+    window.addEventListener("pointerdown", this.onPointerDown);
     window.addEventListener("resize", this.onResize);
   }
 
@@ -112,8 +114,17 @@ export class Experience {
     const ny = -(event.clientY / window.innerHeight) * 2 + 1;
     this.pointer.tx = nx;
     this.pointer.ty = ny;
+    this.ndc.set(nx, ny);
     this.idle = false;
     this.lastMove = performance.now();
+    const over = this.robot.pickShoulder(this.raycaster, this.camera, this.ndc);
+    this.canvas.style.cursor = over ? "pointer" : "";
+  };
+
+  onPointerDown = (event) => {
+    this.onPointerMove(event);
+    const side = this.robot.pickShoulder(this.raycaster, this.camera, this.ndc);
+    if (side) this.robot.touchShoulder(side);
   };
 
   onResize = () => {
@@ -172,7 +183,7 @@ export class Experience {
   dispose() {
     cancelAnimationFrame(this.raf);
     window.removeEventListener("pointermove", this.onPointerMove);
-    window.removeEventListener("pointerdown", this.onPointerMove);
+    window.removeEventListener("pointerdown", this.onPointerDown);
     window.removeEventListener("resize", this.onResize);
     this.robot.dispose();
     this.renderer.dispose();

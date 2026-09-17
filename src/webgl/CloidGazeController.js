@@ -57,12 +57,11 @@ export class CloidGazeController {
     const w = MathUtils.clamp(this.weight, 0, 1);
     const right = Math.max(this.x, 0);
     const left = Math.max(-this.x, 0);
-    const turn = MathUtils.smootherstep((this.x + 1) * 0.5, 0, 1);
     const headYaw =
-      (-left * MathUtils.degToRad(12) + right * MathUtils.degToRad(18) + turn * MathUtils.degToRad(6)) * w;
+      (-left * MathUtils.degToRad(11) + right * MathUtils.degToRad(14)) * w;
     const pitch = this.y * MathUtils.degToRad(6) * w;
     const torsoYaw =
-      (-left * MathUtils.degToRad(3.2) + right * MathUtils.degToRad(14) + turn * MathUtils.degToRad(8)) * w;
+      (-left * MathUtils.degToRad(3) + right * MathUtils.degToRad(9)) * w;
     const torsoRoll = (right * -4 + left * 1.5) * MathUtils.degToRad(1) * w;
     const headSettle = 0.18 + right * 0.1;
     const torsoSettle = 0.32 - right * 0.14;

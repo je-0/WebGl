@@ -13,6 +13,10 @@ export class Robot {
     this.arms = null;
     this.model = null;
     this.bounds = null;
+    this.modelRest = null;
+    this.bodyYaw = 0;
+    this.bodyEuler = new THREE.Euler(0, 0, 0, "YXZ");
+    this.bodyOffset = new THREE.Quaternion();
     this.loadPromise = this.load().catch((error) => {
       console.error("[CLOiD] model load failed", error);
     });
@@ -51,6 +55,7 @@ export class Robot {
 
     this.applyNaturalStance(model);
     this.model = model;
+    this.modelRest = model.quaternion.clone();
     this.root.add(model);
     this.head = model.getObjectByName("NeckPivot") || model;
     this.gaze = new CloidGazeController(model);
@@ -84,20 +89,37 @@ export class Robot {
   applyNaturalStance(model) {
     const torso = model.getObjectByName("TorsoPivot");
     const neck = model.getObjectByName("NeckPivot");
-    model.rotateY(THREE.MathUtils.degToRad(-25));
-    torso?.rotateY(THREE.MathUtils.degToRad(-8));
-    torso?.rotateX(THREE.MathUtils.degToRad(-2.5));
-    torso?.rotateZ(THREE.MathUtils.degToRad(2));
-    neck?.rotateY(THREE.MathUtils.degToRad(9));
-    neck?.rotateX(THREE.MathUtils.degToRad(3));
+    model.rotateY(THREE.MathUtils.degToRad(-8));
+    torso?.rotateY(THREE.MathUtils.degToRad(-4));
+    torso?.rotateX(THREE.MathUtils.degToRad(-2));
+    torso?.rotateZ(THREE.MathUtils.degToRad(1.2));
+    neck?.rotateY(THREE.MathUtils.degToRad(4));
+    neck?.rotateX(THREE.MathUtils.degToRad(2));
+  }
+
+  pickShoulder(raycaster, camera, ndc) {
+    const meshes = this.arms?.getPickMeshes() ?? [];
+    if (!this.ready || !meshes.length) return null;
+    raycaster.setFromCamera(ndc, camera);
+    const hit = raycaster.intersectObjects(meshes, false)[0];
+    return hit ? this.arms.sideFromObject(hit.object) : null;
+  }
+
+  touchShoulder(side) {
+    this.arms?.touchShoulder(side);
   }
 
   update(pointer, _time, _speed, dt = 0.016) {
-    if (!this.ready || !this.gaze) return;
+    if (!this.ready || !this.gaze || !this.model || !this.modelRest) return;
     this.gaze.setPointer(pointer.x, pointer.y);
     this.gaze.update(dt);
     this.arms?.setPointer(pointer.x, pointer.y);
     this.arms?.update(dt);
+
+    const targetYaw = pointer.x * THREE.MathUtils.degToRad(22);
+    this.bodyYaw += (targetYaw - this.bodyYaw) * (1 - Math.exp(-dt / 0.38));
+    this.bodyOffset.setFromEuler(this.bodyEuler.set(0, this.bodyYaw, 0, "YXZ"));
+    this.model.quaternion.copy(this.modelRest).multiply(this.bodyOffset);
   }
 
   dispose() {

@@ -152,7 +152,7 @@ export class CloidArmController {
     }
     const dt = Math.min(Math.max(delta, 0), 0.05);
     this.elapsed += dt;
-    const a = 1 - Math.exp(-dt / 0.12);
+    const a = 1 - Math.exp(-dt / 0.07);
     this.x += (this.tx - this.x) * a;
     this.y += (this.ty - this.y) * a;
 

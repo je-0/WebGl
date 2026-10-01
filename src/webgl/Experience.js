@@ -36,12 +36,12 @@ export class Experience {
   init() {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
-      antialias: true,
+      antialias: window.devicePixelRatio < 2,
       alpha: this.isBust,
       powerPreference: "high-performance",
     });
     this.renderer.setClearColor(IVORY, this.isBust ? 0 : 1);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.NeutralToneMapping;
@@ -64,6 +64,9 @@ export class Experience {
     this.camera.lookAt(0, this.isBust ? 1.5 : 0.92, 0);
 
     this.createEntity();
+    this.robot.loadPromise.then(() =>
+      this.renderer.compileAsync(this.scene, this.camera),
+    );
     this.createLights();
     this.layout();
   }
@@ -149,8 +152,10 @@ export class Experience {
 
     const prevX = this.pointer.x;
     const prevY = this.pointer.y;
-    this.pointer.x += (this.pointer.tx - this.pointer.x) * 0.075;
-    this.pointer.y += (this.pointer.ty - this.pointer.y) * 0.075;
+    const kp = 1 - Math.exp(-dt / 0.12);
+    const kc = 1 - Math.exp(-dt / 0.32);
+    this.pointer.x += (this.pointer.tx - this.pointer.x) * kp;
+    this.pointer.y += (this.pointer.ty - this.pointer.y) * kp;
     this.pointer.vx = (this.pointer.x - prevX) / dt;
     this.pointer.vy = (this.pointer.y - prevY) / dt;
     const speed = clamp01(Math.hypot(this.pointer.vx, this.pointer.vy) * 0.045);
@@ -159,16 +164,16 @@ export class Experience {
 
     if (this.isBust) {
       this.camera.position.x +=
-        (this.pointer.x * 0.04 - this.camera.position.x) * 0.03;
+        (this.pointer.x * 0.04 - this.camera.position.x) * kc;
       this.camera.position.y +=
-        (1.52 + this.pointer.y * 0.012 - this.camera.position.y) * 0.03;
+        (1.52 + this.pointer.y * 0.012 - this.camera.position.y) * kc;
       this.camera.position.z = this.camTarget.z;
       this.camera.lookAt(0, 1.5, 0);
     } else {
       this.camera.position.x +=
-        (0.12 + this.pointer.x * 0.1 - this.camera.position.x) * 0.03;
+        (0.12 + this.pointer.x * 0.1 - this.camera.position.x) * kc;
       this.camera.position.y +=
-        (1.18 + this.pointer.y * 0.06 - this.camera.position.y) * 0.03;
+        (1.18 + this.pointer.y * 0.06 - this.camera.position.y) * kc;
       this.camera.position.z = this.camTarget.z;
       this.camera.lookAt(this.group.position.x * 0.7, 0.92, 0);
     }

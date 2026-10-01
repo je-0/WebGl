@@ -3,6 +3,9 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { CloidGazeController } from "./CloidGazeController.js";
 import { CloidArmController } from "./CloidArmController.js";
 
+const SCRIPT_SRC =
+  typeof document !== "undefined" ? document.currentScript?.src || "" : "";
+
 export class Robot {
   constructor({ variant = "full" } = {}) {
     this.variant = variant === "bust" ? "bust" : "full";
@@ -66,14 +69,20 @@ export class Robot {
 
   async loadModel() {
     const loader = new GLTFLoader();
+    const page = window.location.href;
+    const script = SCRIPT_SRC || document.currentScript?.src || "";
     const base =
       typeof import.meta.env === "object" && import.meta.env?.BASE_URL
         ? import.meta.env.BASE_URL
         : "./";
     const urls = [
-      new URL(`${base}models/cloid-hero.glb`, window.location.href).href,
-      new URL("./public/models/cloid-hero.glb", window.location.href).href,
-    ];
+      window.CLOID_MODEL_URL,
+      script && new URL("../models/cloid-hero.glb", script).href,
+      script && new URL("models/cloid-hero.glb", script).href,
+      new URL(`${base}models/cloid-hero.glb`, page).href,
+      new URL("./models/cloid-hero.glb", page).href,
+      new URL("./public/models/cloid-hero.glb", page).href,
+    ].filter(Boolean);
 
     let lastError;
     for (const url of [...new Set(urls)]) {
@@ -117,7 +126,7 @@ export class Robot {
     this.arms?.update(dt);
 
     const targetYaw = pointer.x * THREE.MathUtils.degToRad(22);
-    this.bodyYaw += (targetYaw - this.bodyYaw) * (1 - Math.exp(-dt / 0.38));
+    this.bodyYaw += (targetYaw - this.bodyYaw) * (1 - Math.exp(-dt / 0.22));
     this.bodyOffset.setFromEuler(this.bodyEuler.set(0, this.bodyYaw, 0, "YXZ"));
     this.model.quaternion.copy(this.modelRest).multiply(this.bodyOffset);
   }

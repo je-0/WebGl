@@ -51,7 +51,7 @@ export class CloidGazeController {
     }
     const dt = Math.min(Math.max(delta, 0), 0.05);
     this.elapsed += dt;
-    const a = 1 - Math.exp(-dt / 0.09);
+    const a = 1 - Math.exp(-dt / 0.06);
     this.x += (this.tx - this.x) * a;
     this.y += (this.ty - this.y) * a;
     const w = MathUtils.clamp(this.weight, 0, 1);
@@ -63,8 +63,8 @@ export class CloidGazeController {
     const torsoYaw =
       (-left * MathUtils.degToRad(3) + right * MathUtils.degToRad(9)) * w;
     const torsoRoll = (right * -4 + left * 1.5) * MathUtils.degToRad(1) * w;
-    const headSettle = 0.18 + right * 0.1;
-    const torsoSettle = 0.32 - right * 0.14;
+    const headSettle = 0.11 + right * 0.05;
+    const torsoSettle = 0.18 - right * 0.06;
     this.headOffset.setFromEuler(this.euler.set(pitch, headYaw, 0, "YXZ"));
     this.headOffset.premultiply(this.headRest);
     this.head.quaternion.slerp(this.headOffset, 1 - Math.exp(-dt / headSettle));
